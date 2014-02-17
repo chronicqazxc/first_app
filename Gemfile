@@ -8,6 +8,12 @@ gem 'rails', '4.0.2'
 gem 'sqlite3', group:[:development, :test]
 
 # gem 'pg', group: :production
+
+group :production do
+  gem 'thin'
+  gem 'pg'
+end
+
 gem 'rails_12factor', group: :production
 
 # Use SCSS for stylesheets
@@ -37,6 +43,8 @@ group :doc do
 end
 
 gem 'bootstrap-sass'
+gem 'compass'
+gem 'haml' # for SASS
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 
