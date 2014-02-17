@@ -9,10 +9,7 @@ gem 'sqlite3', group:[:development, :test]
 
 # gem 'pg', group: :production
 
-group :production do
-  gem 'thin'
-  gem 'pg'
-end
+gem 'pg'
 
 gem 'rails_12factor', group: :production
 
