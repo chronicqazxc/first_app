@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  skip_before_action :authenticate_user, only: [ :new, :create ]
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   # GET /users
@@ -24,30 +25,42 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    @user = User.new(user_params)
+    @user = User.new(create_params)
 
-    respond_to do |format|
-      if @user.save
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @user }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
+    if @user.save
+      sign_in @user # Sign in when created (session helper)
+      flash[:success] = "Welcome, #{@user.name}"
+      redirect_to @user
+    else
+      render action: 'new'
     end
+    # respond_to do |format|
+    #   if @user.save
+    #     format.html { redirect_to @user, notice: 'User was successfully created.' }
+    #     format.json { render action: 'show', status: :created, location: @user }
+    #   else
+    #     format.html { render action: 'new' }
+    #     format.json { render json: @user.errors, status: :unprocessable_entity }
+    #   end
+    # end
   end
 
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
-    respond_to do |format|
-      if @user.update(user_params)
-        format.html { redirect_to @user, notice: 'User was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'edit' }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
+    if @user.update(update_params)
+      flash[:success] = "Setting updated"
+      redirect_to @user
+    else
+      render action: 'edit'
+    # respond_to do |format|
+#       if @user.update(user_params)
+#         format.html { redirect_to @user, notice: 'User was successfully updated.' }
+#         format.json { head :no_content }
+#       else
+#         format.html { render action: 'edit' }
+#         format.json { render json: @user.errors, status: :unprocessable_entity }
+#       end
     end
   end
 
@@ -66,9 +79,12 @@ class UsersController < ApplicationController
     def set_user
       @user = User.find(params[:id])
     end
-
+    
+    def update_params
+      params.require(:user).permit(:name, :password, :password_confirmation)
+    end
     # Never trust parameters from the scary internet, only allow the white list through.
-    def user_params
-      params.require(:user).permit(:name, :email)
+    def create_params
+      params.require(:user).permit(:name, :email, :password, :password_confirmation)
     end
 end
